@@ -10,39 +10,38 @@ import Form from '../../../../../../labs/week-6/resty/components/form';
 import Results from '../../../../../../labs/week-6/resty/components/results';
 
 class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: null,
+			requestParams: {},
+		};
+	}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      requestParams: {},
-    };
-  }
+	callApi = (requestParams) => {
+		// mock output
+		const data = {
+			count: 2,
+			results: [
+				{ name: 'fake thing 1', url: 'http://fakethings.com/1' },
+				{ name: 'fake thing 2', url: 'http://fakethings.com/2' },
+			],
+		};
+		this.setState({ data, requestParams });
+	};
 
-  callApi = (requestParams) => {
-    // mock output
-    const data = {
-      count: 2,
-      results: [
-        {name: 'fake thing 1', url: 'http://fakethings.com/1'},
-        {name: 'fake thing 2', url: 'http://fakethings.com/2'},
-      ],
-    };
-    this.setState({data, requestParams});
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        <Header />
-        <div>Request Method: {this.state.requestParams.method}</div>
-        <div>URL: {this.state.requestParams.url}</div>
-        <Form handleApiCall={this.callApi} />
-        <Results data={this.state.data} />
-        <Footer />
-      </React.Fragment>
-    );
-  }
+	render() {
+		return (
+			<React.Fragment>
+				<Header />
+				<div>Request Method: {this.state.requestParams.method}</div>
+				<div>URL: {this.state.requestParams.url}</div>
+				<Form handleApiCall={this.callApi} />
+				<Results data={this.state.data} />
+				<Footer />
+			</React.Fragment>
+		);
+	}
 }
 
 export default App;
