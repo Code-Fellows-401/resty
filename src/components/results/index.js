@@ -5,8 +5,8 @@ function Results(props) {
 	return (
 		<section>
 			<pre>
-				{props.apiData ? (
-					<ReactJson src={props.apiData} theme='summerfruit:inverted' />
+				{props.data ? (
+					<ReactJson src={props.data} theme='summerfruit:inverted' />
 				) : null}
 			</pre>
 		</section>

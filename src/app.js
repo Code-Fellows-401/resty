@@ -1,50 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useReducer } from 'react';
 import './app.scss';
 import axios from 'axios';
 
-// Let's talk about using index.js and some other name in the component folder
-// There's pros and cons for each way of doing this ...
 import Header from './components/header';
 import Footer from './components/footer';
 import Form from './components/form';
 import Results from './components/results';
+import History from './components/history/history';
 
 function App() {
-	const [methodRequest, setMethodRequest] = useState('');
-	const [requestUrl, setRequestUrl] = useState('');
-	const [requestParams, setRequestParams] = useState({});
-	const [apiData, setApiData] = useState('');
+	const initialState = {
+		data: null,
+		loading: false,
+		requestUrl: '',
+		method: '',
+		body: {},
+		history: [],
+		showHistory: false,
+	};
 
-	// const callApi = (formParams) => {
-	// 	// console.log(formParams);
-	// 	// mock output
-	// 	// const data = {
-	// 	// 	count: 2,
-	// 	// 	results: [
-	// 	// 		{ name: 'fake thing 1', url: 'http://fakethings.com/1' },
-	// 	// 		{ name: 'fake thing 2', url: 'http://fakethings.com/2' },
-	// 	// 	],
-	// 	// };
-	// 	// setData(data);
-	// 	setRequestParams({ ...requestParams, ...formParams });
-	// 	// console.log(requestParams);
-	// };
+	let reducer = (state, action) => {
+		switch (action.type) {
+			case 'DATA':
+				return {
+					...state,
+					data: action.payload,
+				};
+			case 'LOADING':
+				return {
+					...state,
+					loading: action.payload,
+				};
+			case 'PARAMS':
+				return {
+					...state,
+					body: action.payload.body,
+					requestUrl: action.payload.url,
+				};
+			case 'METHOD':
+				return {
+					...state,
+					method: action.payload,
+				};
+			case 'HISTORY':
+				return {
+					...state,
+					history: [...state.data, action.payload],
+				};
+			case 'SHOW-HISTORY':
+				return {
+					...state,
+					showHistory: action.payload,
+				};
+			default:
+				return state;
+		}
+	};
+	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
-		let action = async () => {
+		let action = { type: 'DATA', payload: null };
+		const apiRequest = async () => {
 			try {
-				switch (methodRequest) {
+				switch (state.method) {
 					case 'GET':
-						await axios.get(requestUrl).then((response) => {
-							setApiData(response.data);
-						});
-						break;
+						// if (state.data === null) {
+						let { headers, data } = await axios.get(state.requestUrl);
+						action.payload = { headers, data };
+						return dispatch(action);
+					// } else {
+					// 	let { headers, data } = await axios.get(
+					// 		state.requestUrl + `/${state.userData}`
+					// 	);
+					// 	action.payload = { headers, data };
+					// 	return dispatch(action);
+					// }
 					case 'POST':
-						setApiData({
-							Message:
-								'You have clicked on POST, Click GET to retrieve Data from the API',
-						});
-						break;
+						action.payload =
+							'You have clicked on POST, Click GET to retrieve Data from the API';
+						return dispatch(action);
+
+					case 'PUT':
+						action.payload =
+							'You have clicked on POST, Click GET to retrieve Data from the API';
+						return dispatch(action);
+					case 'DELETE':
+						action.payload =
+							'You have clicked on POST, Click GET to retrieve Data from the API';
+						return dispatch(action);
 					default:
 						console.log('welp');
 						break;
@@ -53,24 +96,17 @@ function App() {
 				console.log(e);
 			}
 		};
-		action();
-	}, [requestUrl, methodRequest]);
+		apiRequest();
+	}, [state]);
+
 	return (
 		<>
-			<Header />
-			<div>Request Method: {methodRequest}</div>
-			<div>URL: {requestUrl}</div>
-			<Form
-				setMethodRequest={setMethodRequest}
-				setRequestUrl={setRequestUrl}
-				setRequestParams={setRequestParams}
-				requestParams={requestParams}
-			/>
-			{apiData ? (
-				<Results apiData={apiData} requestParams={requestParams} />
-			) : (
-				<p>loading</p>
-			)}
+			<Header dispatch={dispatch} />
+			<div>Request Method: {state.method}</div>
+			<div>URL: {state.requestUrl}</div>
+			{state.showHistory ? <History /> : <Form dispatch={dispatch} />}
+			{state.data ? <Results data={state.data} /> : <></>}
+			;
 			<Footer />
 		</>
 	);
