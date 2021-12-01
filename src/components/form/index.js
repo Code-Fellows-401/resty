@@ -1,40 +1,62 @@
-
 import './form.scss';
 
 function Form(props) {
-	// Changes URL on submit
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		props.setRequestUrl(e.target[0].value);
-	};
-
-	// Changes Method on request
-	const handleClick = (e) => {
-		props.setMethodRequest(e.target.value);
-	};
-
 	return (
 		<>
-			<form onSubmit={handleSubmit}>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					props.dispatch({ type: 'DATA', payload: e.target.value });
+				}}
+			>
 				<label>
 					<span>Search By URL: </span>
-					<input onSubmit={(e) => handleSubmit(e)} name='url' type='text' />
-					<button type='submit'>
-						GO!
-					</button>
+					<input
+						onChange={(e) => {
+							console.log(e.target.value);
+							props.dispatch({
+								type: 'PARAMS',
+								payload: { url: e.target.value },
+							});
+						}}
+					/>
+					<button type='submit'>GO!</button>
 				</label>
 				<label className='methods'>
-					<button onClick={handleClick} type='button' id='get' value='GET'>
+					<button
+						onClick={(e) =>
+							props.dispatch({ type: 'METHOD', payload: e.target.value })
+						}
+						type='button'
+						id='get'
+						value='GET'
+					>
 						GET
 					</button>
-					<button onClick={handleClick} type='button' id='post' value='POST'>
+					<button
+						onClick={(e) =>
+							props.dispatch({ type: 'METHOD', payload: e.target.value })
+						}
+						type='button'
+						id='post'
+						value='POST'
+					>
 						POST
 					</button>
-					<button onClick={handleClick} type='button' id='put' value='PUT'>
+					<button
+						onClick={(e) =>
+							props.dispatch({ type: 'METHOD', payload: e.target.value })
+						}
+						type='button'
+						id='put'
+						value='PUT'
+					>
 						PUT
 					</button>
 					<button
-						onClick={handleClick}
+						onClick={(e) =>
+							props.dispatch({ type: 'METHOD', payload: e.target.value })
+						}
 						type='button'
 						id='delete'
 						value='DELETE'
@@ -42,10 +64,7 @@ function Form(props) {
 						DELETE
 					</button>
 				</label>
-				<textarea
-					// onChange={(e) => setRequestData(e.target.value)}
-					name='json'
-				/>
+				{/* <textarea onChange={handleUserData} name='json' /> */}
 			</form>
 		</>
 	);
